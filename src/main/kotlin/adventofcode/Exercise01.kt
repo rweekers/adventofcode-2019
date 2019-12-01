@@ -2,10 +2,10 @@ package adventofcode
 
 class Exercise01(input: String) {
 
-    private val inputList: List<String> = resourceAsListOfString(input)
+    private val inputList: List<Long> = resourceAsListOfLong(input)
 
     fun silverExercise(): Long {
-        return inputList.map { calculateFuelForMass(it.toLong()) }.reduce { acc, curr -> acc + curr }
+        return inputList.map { calculateFuelForMass(it) }.reduce { acc, curr -> acc + curr }
     }
 
     private fun calculateFuelForMass(mass: Long) =
@@ -21,12 +21,12 @@ class Exercise01(input: String) {
     }
 
     fun goldExercise(): Long {
-        return inputList.map { calculateFuelForMass(it.toLong()) }.map { calculateFuel(it, it) }
+        return inputList.map { calculateFuelForMass(it) }.map { calculateFuel(it, it) }
                 .reduce { acc, curr -> acc + curr }
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     val exc1 = Exercise01("/input01.txt")
     println("The answer to the silver exercise is ${exc1.silverExercise()}")
     println("The answer to the gold exercise is ${exc1.goldExercise()}")

@@ -8,12 +8,12 @@ class Exercise01Test {
     @Test
     fun `exercise 1 silver test`() {
         val exc1 = Exercise01("/test01.txt")
-        assertThat(exc1.silverExercise()).isEqualTo(34241)
+        assertThat(exc1.silverExercise()).isEqualTo(2 + 2 + 654 + 33583)
     }
 
     @Test
-    fun `exercise 1-1 gold test`() {
+    fun `exercise 1 gold test`() {
         val exc1 = Exercise01("/test01.txt")
-        assertThat(exc1.goldExercise()).isEqualTo(51316)
+        assertThat(exc1.goldExercise()).isEqualTo(2 + 2 + 966 + 50346)
     }
 }
