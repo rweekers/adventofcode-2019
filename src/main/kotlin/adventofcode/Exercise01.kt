@@ -4,13 +4,25 @@ class Exercise01(input: String) {
 
     private val inputList: List<String> = resourceAsListOfString(input)
 
-    fun silverExercise(): Int {
-        inputList.forEach { println(it) }
-        return 0
+    fun silverExercise(): Long {
+        return inputList.map { calculateFuelForMass(it.toLong()) }.reduce { acc, curr -> acc + curr }
     }
 
-    fun goldExercise(): Int {
-        return 0
+    private fun calculateFuelForMass(mass: Long) =
+            mass.div(3L) - 2
+
+    private fun calculateFuel(fuel: Long, totalFuel: Long): Long {
+        val extraFuelNeeded = fuel.div(3L) - 2
+        return if (extraFuelNeeded <= 0) {
+            return totalFuel
+        } else {
+            calculateFuel(extraFuelNeeded, totalFuel.plus(extraFuelNeeded))
+        }
+    }
+
+    fun goldExercise(): Long {
+        return inputList.map { calculateFuelForMass(it.toLong()) }.map { calculateFuel(it, it) }
+                .reduce { acc, curr -> acc + curr }
     }
 }
 
