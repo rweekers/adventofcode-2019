@@ -11,7 +11,7 @@ class Exercise01(input: String) {
     private fun calculateFuelForMass(mass: Long) =
             mass.div(3L) - 2
 
-    private fun calculateFuel(fuel: Long, totalFuel: Long): Long {
+    private tailrec fun calculateFuel(fuel: Long, totalFuel: Long): Long {
         val extraFuelNeeded = fuel.div(3L) - 2
         return if (extraFuelNeeded <= 0) {
             return totalFuel
