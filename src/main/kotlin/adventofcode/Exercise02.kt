@@ -3,7 +3,7 @@ package adventofcode
 class Exercise02(input: String) {
 
     private val initialList = lineAsListOfInts(input)
-    private var inputList = initialList.toMutableList()
+    private var inputList: MutableList<Int> = mutableListOf()
 
     fun silverExercise(noun: Int? = null, verb: Int? = null): Int {
         runProgram(noun, verb)
