@@ -10,7 +10,7 @@ fun resourceAsListOfLong(fileName: String): List<Long> =
         resourceAsListOfString(fileName).map { it.toLong() }
 
 fun lineAsListOfInts(fileName: String): List<Int> =
-        Utils.javaClass.getResource(fileName).openStream().bufferedReader().readLine().split(",").map { it.toInt() }
+        Utils.javaClass.getResource(fileName).openStream().bufferedReader().readLine().toListOfInt()
 
 fun lineAsListOfStrings(fileName: String, index: Int): List<String> =
         Utils.javaClass.getResource(fileName).openStream().bufferedReader().readLines()[index].split(",")
