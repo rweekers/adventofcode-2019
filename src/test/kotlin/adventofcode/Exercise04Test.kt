@@ -29,5 +29,8 @@ class Exercise04Test {
 
         assertThat(exc4.hasExactlyTwoSubsequentEqualDigits(111122.toListOfInt())).isEqualTo(true)
         assertThat(exc4.allDigitsIncreasingOrEqual(111122.toListOfInt())).isEqualTo(true)
+
+        // TODO extend that it copes with test below
+        // assertThat(exc4.hasExactlyTwoSubsequentEqualDigits(222122.toListOfInt())).isEqualTo(true)
     }
 }
