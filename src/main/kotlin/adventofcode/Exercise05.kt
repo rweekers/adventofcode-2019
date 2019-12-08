@@ -2,7 +2,7 @@ package adventofcode
 
 class Exercise05(input: String) {
 
-    private val initialList = lineAsListOfInts(input)
+    private val initialList = commaSeparatedLineAsListOfInts(input)
     private val intCode = IntCode(initialList)
 
     fun silverExercise(): Int {
