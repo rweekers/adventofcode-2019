@@ -22,6 +22,10 @@ fun Int.parameterMode(postion: Int): Int {
     return this / (10.0.pow(postion).toInt()) % 10
 }
 
-fun String.toListOfInt(): List<Int> {
+fun String.commaSeparatedToListOfInt(): List<Int> {
     return this.split(",").map { it.toInt() }
+}
+
+fun String.toListOfInt(): List<Int> {
+    return this.toCharArray().map { it.toString().toInt() }
 }

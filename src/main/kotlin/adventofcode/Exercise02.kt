@@ -2,7 +2,7 @@ package adventofcode
 
 class Exercise02(input: String) {
 
-    private val initialList = lineAsListOfInts(input)
+    private val initialList = commaSeparatedLineAsListOfInts(input)
     private var inputList: MutableList<Int> = mutableListOf()
 
     fun silverExercise(noun: Int? = null, verb: Int? = null): Int {
