@@ -10,7 +10,7 @@ class Exercise05(input: String) {
     }
 
     fun goldExercise(): Int {
-        return intCode.runProgram(5)
+        return IntCode(initialList, mutableListOf(5)).runProgram()
     }
 }
 

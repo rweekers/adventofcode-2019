@@ -1,12 +1,11 @@
 package adventofcode
 
-class IntCode(private val initialList: List<Int>, var parameter: Int = 1) {
+class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int> = mutableListOf(1)) {
 
     private var inputList = mutableListOf<Int>()
     var output = mutableListOf<Int>()
 
-    fun runProgram(parameter: Int = 1): Int {
-        this.parameter = parameter
+    fun runProgram(): Int {
         inputList = initialList.toMutableList()
         var currentIndex = 0
         do {
@@ -112,16 +111,20 @@ class IntCode(private val initialList: List<Int>, var parameter: Int = 1) {
         }
     }
 
-    private class MemCodeInput(private val parameter: Int, private val parameterValue: Int, private val inputList: MutableList<Int>) : MemCodeIns {
+    private class MemCodeInput(private val parameter: MutableList<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>) : MemCodeIns {
         override fun process(): Int {
-            inputList[parameterValue] = parameter
+            inputList[parameterValue] = parameter[0]
+            if (parameter.size > 1) {
+                parameter.removeAt(0)
+            }
+
             return 2
         }
     }
 
-    private class MemCodeOutput(private var parameter: Int, private val parameterValue: Int, private val inputList: MutableList<Int>, private val output: MutableList<Int>) : MemCodeIns {
+    private class MemCodeOutput(private var parameter: List<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>, private val output: MutableList<Int>) : MemCodeIns {
         override fun process(): Int {
-            parameter = inputList[parameterValue]
+            parameter = mutableListOf(inputList[parameterValue])
             output.add(inputList[parameterValue])
             return 2
         }
