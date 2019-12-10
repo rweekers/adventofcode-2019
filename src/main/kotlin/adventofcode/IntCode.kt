@@ -1,20 +1,49 @@
 package adventofcode
 
-class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int> = mutableListOf(1)) {
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.last
+import kotlinx.coroutines.channels.toList
+import kotlinx.coroutines.runBlocking
 
-    private var inputList = mutableListOf<Int>()
-    var output = mutableListOf<Int>()
+class IntCode(private val initialList: List<Int>, val parameter: Channel<Int>) {
 
-    fun runProgram(): Int {
-        inputList = initialList.toMutableList()
-        var currentIndex = 0
-        do {
-            currentIndex += processInstruction(inputList, currentIndex)
-        } while (inputList[currentIndex] != 99)
-        return output.last()
+    private var inputList = initialList.toMutableList()
+    val output: Channel<Int> = Channel(Channel.UNLIMITED)
+
+    companion object {
+        operator fun invoke(program: List<Int>, singleInput: Int) = runBlocking {
+            IntCode(program, mutableListOf(singleInput).toChannel())
+        }
+
+        operator fun invoke(program: List<Int>, input: MutableList<Int> = mutableListOf()) = runBlocking {
+            IntCode(program, input.toChannel())
+        }
     }
 
-    private fun processInstruction(inputList: MutableList<Int>, currentIndex: Int): Int {
+    fun runProgram(): Int {
+        return runBlocking {
+            runSuspending()
+            output.toList().last()
+        }
+//        inputList = initialList.toMutableList()
+//        var currentIndex = 0
+//        do {
+//            currentIndex += processInstruction(inputList, currentIndex)
+//        } while (inputList[currentIndex] != 99)
+//        return output.last()
+    }
+
+    suspend fun runSuspending() {
+        var instructionPointer = 0
+
+        do {
+            val nextOp = processInstruction(inputList, instructionPointer)
+        } while (nextOp != 9)
+
+        output.close()
+    }
+
+    private suspend fun processInstruction(inputList: MutableList<Int>, currentIndex: Int): Int {
         val instruction = inputList[currentIndex]
         val code = instruction.toString().takeLast(2).toInt()
 
@@ -40,7 +69,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
     }
 
     private interface MemCodeIns {
-        fun process(): Int
+        suspend fun process(): Int
     }
 
     private abstract class MemCodeOperation(val parameterModes: Int, val parameters: List<Int>, val inputList: MutableList<Int>) : MemCodeIns {
@@ -59,7 +88,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
 
     private class MemCodeMultiply(parameterModes: Int, parameters: List<Int>, inputList: MutableList<Int>) : MemCodeOperation(parameterModes, parameters, inputList) {
 
-        override fun process(): Int {
+        override suspend fun process(): Int {
             val calculatedValue = getParameterValue(0).times(getParameterValue(1))
             inputList[parameters[2]] = calculatedValue
             return 4
@@ -68,7 +97,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
 
     private class MemCodeAddition(parameterModes: Int, parameters: List<Int>, inputList: MutableList<Int>) : MemCodeOperation(parameterModes, parameters, inputList) {
 
-        override fun process(): Int {
+        override suspend fun process(): Int {
             val calculatedValue = getParameterValue(0).plus(getParameterValue(1))
             inputList[parameters[2]] = calculatedValue
             return 4
@@ -77,7 +106,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
 
     private class MemCodeLessThan(parameterModes: Int, parameters: List<Int>, inputList: MutableList<Int>) : MemCodeOperation(parameterModes, parameters, inputList) {
 
-        override fun process(): Int {
+        override suspend fun process(): Int {
             if (getParameterValue(0) < getParameterValue(1)) {
                 inputList[parameters[2]] = 1
             } else {
@@ -89,7 +118,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
 
     private class MemCodeEquals(parameterModes: Int, parameters: List<Int>, inputList: MutableList<Int>) : MemCodeOperation(parameterModes, parameters, inputList) {
 
-        override fun process(): Int {
+        override suspend fun process(): Int {
             if (getParameterValue(0) == getParameterValue(1)) {
                 inputList[parameters[2]] = 1
             } else {
@@ -100,7 +129,7 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
     }
 
     private class MemCodeJump(parameterModes: Int, parameters: List<Int>, inputList: MutableList<Int>, private val jumpIfTrue: Boolean, private val index: Int) : MemCodeOperation(parameterModes, parameters, inputList) {
-        override fun process(): Int {
+        override suspend fun process(): Int {
             val parameterOne = getParameterValue(0)
             val parameterTwo = getParameterValue(1)
 
@@ -111,21 +140,18 @@ class IntCode(private val initialList: List<Int>, var parameter: MutableList<Int
         }
     }
 
-    private class MemCodeInput(private val parameter: MutableList<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>) : MemCodeIns {
-        override fun process(): Int {
-            inputList[parameterValue] = parameter[0]
-            if (parameter.size > 1) {
-                parameter.removeAt(0)
-            }
+    private class MemCodeInput(private val parameter: Channel<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>) : MemCodeIns {
+        override suspend fun process(): Int {
+            val writeTo = inputList[parameterValue]
+            inputList[writeTo] = parameter.receive()
 
             return 2
         }
     }
 
-    private class MemCodeOutput(private var parameter: List<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>, private val output: MutableList<Int>) : MemCodeIns {
-        override fun process(): Int {
-            parameter = mutableListOf(inputList[parameterValue])
-            output.add(inputList[parameterValue])
+    private class MemCodeOutput(private var parameter: Channel<Int>, private val parameterValue: Int, private val inputList: MutableList<Int>, private val output: Channel<Int>) : MemCodeIns {
+        override suspend fun process(): Int {
+            output.send(parameterValue)
             return 2
         }
     }

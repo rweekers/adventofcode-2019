@@ -1,5 +1,6 @@
 package adventofcode
 
+import kotlinx.coroutines.channels.Channel
 import kotlin.math.pow
 
 fun <T> List<T>.innerJoin(otherList: List<T>): List<T> {
@@ -40,6 +41,9 @@ fun <T> List<T>.permutations(): List<List<T>> =
                 }
             }
         }
+
+fun <T> List<T>.toChannel(capacity: Int = Channel.UNLIMITED): Channel<T> =
+        Channel<T>(capacity).also { this.forEach { e -> it.offer(e) } }
 
 fun String.toListOfSingleStrings(): List<String> {
     return this.toCharArray().map { it.toString() }
