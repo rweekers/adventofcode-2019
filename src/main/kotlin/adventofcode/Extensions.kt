@@ -29,3 +29,19 @@ fun String.commaSeparatedToListOfInt(): List<Int> {
 fun String.toListOfInt(): List<Int> {
     return this.toCharArray().map { it.toString().toInt() }
 }
+
+fun String.toListOfSingleStrings(): List<String> {
+    return this.toCharArray().map { it.toString() }
+}
+
+fun Int.greatestCommonDivider(otherInt: Int): Int {
+    var n1 = this
+    var n2 = otherInt
+    while (n1 != n2) {
+        if (n1 > n2)
+            n1 -= n2
+        else
+            n2 -= n1
+    }
+    return n1
+}
