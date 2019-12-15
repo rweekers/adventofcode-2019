@@ -17,3 +17,6 @@ fun lineAsListOfInts(fileName: String): List<Int> =
 
 fun lineAsListOfStrings(fileName: String, index: Int): List<String> =
         Utils.javaClass.getResource(fileName).openStream().bufferedReader().readLines()[index].split(",")
+
+fun gcd(a: Long, b: Long): Long = if (b == 0L) a else gcd(b, a % b)
+fun lcm(a: Long, b: Long): Long = a / gcd(a, b) * b

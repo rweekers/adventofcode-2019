@@ -45,3 +45,10 @@ fun Int.greatestCommonDivider(otherInt: Int): Int {
     }
     return n1
 }
+
+fun <T> List<T>.everyPair(): List<Pair<T, T>> =
+        this.mapIndexed { idx, left ->
+            this.drop(idx+1).map { right ->
+                Pair(left, right)
+            }
+        }.flatten()
